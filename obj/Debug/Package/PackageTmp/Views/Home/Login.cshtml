@@ -1,0 +1,146 @@
+﻿@model democloudapplication.Models.Logins
+@{
+
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <style>
+        span {
+            color: red !important;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial';
+        }
+
+        .login {
+            width: 382px;
+            overflow: hidden;
+            margin: auto;
+            margin: 20 0 0 450px;
+            padding: 80px;
+            border: groove;
+            border-radius: 15px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #277582;
+            padding: 20px;
+        }
+
+        label {
+            color: black;
+            font-size: 17px;
+        }
+
+        #Uname {
+            width: 300px;
+            height: 30px;
+            padding-left: 8px;
+        }
+
+        .Pass {
+            width: 300px;
+            height: 30px;
+            padding-left: 8px;
+        }
+
+        .log {
+            width: 97px;
+            height: 30px;
+            border: none;
+            border-radius: 17px;
+            padding-left: 7px;
+            color: blue;
+        }
+
+        span {
+            color: white;
+            font-size: 17px;
+        }
+
+        a {
+            float: right;
+            background-color: grey;
+        }
+    </style>
+</head>
+<body>
+    <h2>Login</h2><br>
+    <div class="login">
+        <form id="login" method="get" action="/Home/MainPage">
+            <label>
+                <b>
+                    Server Name
+                </b>
+            </label>
+            @Html.TextBoxFor(x => x.ServerName, new { @id = "Uname", @placeholder = "Servername" })
+            @Html.ValidationMessageFor(x => x.ServerName, "", new { @class = " danger small", @style = "color:red" })
+            <br><br>
+            <label>
+                <b>
+                    LoginID
+                </b>
+            </label>
+            <br>
+            @Html.TextBoxFor(x => x.LoginID, new { @id = "LoginId", @class = "Pass", @placeholder = "LoginID" })
+            @Html.ValidationMessageFor(x => x.LoginID, "", new { @class = " danger small", @style = "color:red" })
+            <br><br>
+            <label>
+                <b>
+                    Password
+                </b>
+            </label>
+            <br />
+            @Html.TextBoxFor(x => x.Password, new { @id = "Password", @class = "Pass", @placeholder = "Password", @onchange = "Getdatabases()" })
+            @Html.ValidationMessageFor(x => x.Password, "", new { @class = " danger small", @style = "color:red" })
+            <br><br>
+            <label>
+                <b>
+                    Database
+                </b>
+            </label>
+
+            @Html.DropDownListFor(x => x.Database, new List<SelectListItem>
+       {
+       }, "---Select--", new { @style = "width:314px;height:37px", @class = "Pass" })
+
+            @Html.ValidationMessageFor(x => x.Database, "", new { @class = "danger small", @style = "color:red" })
+
+
+
+            <br><br>
+            <input type="checkbox" id="check">
+            <label>Remember me</label>
+            <br><br>
+            <input type="submit" name="log" class="log" value="Connect">
+            <input type="button" name="" class="log" id="" value="Cancel">
+            <br><br>
+        </form>
+    </div>
+</body>
+</html>
+<script>
+    function Getdatabases() {
+        $.post("/Home/Getdatabases", { Uname: $("#Uname").val(), LoginId: $("#LoginId").val(), Password: $("#Password").val() }, function (data) {
+            var tbls = "<option value=''>--Select--</option>";
+            $.each(data, function (index, item) {
+                tbls += "<option value=" + item.Text + ">" + $.trim(item.Text) + "</option>"
+            });
+            $("#Database").html(tbls);
+        })
+    }
+
+</script>

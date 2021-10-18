@@ -1,0 +1,196 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/Jquery.Pagination.js"></script>
+    <style>
+        .dropbtn {
+            background-color: gray;
+            color: white;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 105px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+            .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+
+                .dropdown-content a:hover {
+                    background-color: #ddd;
+                }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .dropbtn {
+            background-color: gray;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .highlight {
+            border: none;
+        }
+
+        .disable {
+            background-color: darkgray !important;
+            color: white;
+        }
+
+        .toggle {
+            position: fixed;
+            right: 0;
+            margin-right: 2.8%;
+            outline: none;
+            height: auto;
+            width: auto;
+            top: 1.2em;
+            float: right;
+            background: white;
+            box-sizing: border-box;
+            font-size: 10px;
+            display: none;
+        }
+
+        ul {
+            display: none;
+            background-color: white;
+            /*border-radius: 10px;*/
+            /*border-bottom: 2px inset darkgray;
+            border-top: 2px outset darkgray;
+            border-right: 2px inset darkgray;
+            border-left: 2px outset darkgray;*/
+            outline: none;
+        }
+
+            ul li {
+                list-style: none;
+                display: none;
+                text-align: left;
+                color: black;
+            }
+
+       
+    </style>
+</head>
+<body>
+    <div class="row">
+        <div class="col-md-4 col-sm-4" style="padding:55px">
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label>Table Names</label>
+                </div>
+                <div class="col-md-8 col-sm-8">
+                    <select class="form-control" id="tableid" onchange="gettabledata()">
+                        <option>--select--</option>
+                        @foreach (var item in ViewBag.items)
+                        {
+                            <option>@item.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-4 filediv" style="padding:55px;display:none">
+            <div class="row">
+                <div class="col-md-4 col-sm-4">
+                    <label></label>
+                </div>
+                <div class="col-md-8 col-sm-8">
+                    @Html.BeginForm("Home", "UploadFiles", FormMethod.Post,new { @id="fromupload"}){
+                    <input type="file" id="FileUpload" name="FileUpload" onchange="fileupload($(this).val())" />
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 col-md-4" style="padding: 55px;">
+            <div class="dropdown">
+                <button class="dropbtn btn" style="width:95px;width: 105px;height: 46px;">Reports<i class="glyphicon glyphicon-download-alt" style="color:white;padding-left:5px"></i></button>
+                <div class="dropdown-content">
+                    <a onclick="gettabledata('','','genaratexls')">Excel</a>
+                    <a onclick="gettabledata('','','genaratecsv')">CSV</a>
+                    <a onclick="gettabledata('','','genaratepdf')">PDF</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="container pagediv" style="display: block;margin-left: -13px;">
+            <nav aria-label="Page navigation" style="padding-left: 51px;">
+                <ul class="pagination" id="pagination"></ul>
+            </nav>
+        </div>
+        <div id="SearchResult">
+
+        </div>
+    </div>
+
+
+</body>
+</html>
+<script>
+    function fileupload(ths) {
+        $("#fromupload").submit();
+    }
+
+
+
+    function gettabledata(pno, page, tableformate) {
+        if ($("#tableid   option:selected").text() == "Demotblempfiles") {
+            $(".filediv").css("display", "block");
+        } else
+            $(".filediv").css("display", "none");
+
+
+        if (page != "page" && tableformate=="") {
+            $(".pagediv").load(window.location.href + " .pagediv");
+            $('#SearchResult').html('');
+        }
+        if (tableformate == "genaratexls" || tableformate == "genaratecsv" || tableformate == "genaratepdf") {
+            alert();
+            window.location.href = "/Home/ViewDataManagement?TableName=" + $("#tableid").val() + "&pageno=" + pno +
+                "&tblformat=" + tableformate + "&pagesize=" + 100 + "";
+        } else {
+            $.post("/Home/ViewDataManagement", {
+                TableName: $("#tableid").val(),
+                pageno: pno,
+                pagesize: 100
+            }, function (data) {
+                $('#SearchResult').html(data);
+            })
+        }
+    }
+</script>
